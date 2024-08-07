@@ -37,7 +37,7 @@ const Dashboard: FC = () => {
       className="p-4 bg-gray-100 overflow-auto space-y-2"
       style={{ height: "40vh" }}
     >
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 text-nowrap">
         {/* 担当者 プルダウンメニュー */}
         <div className="flex items-center space-x-2">
           <label className="px-2">担当者</label>

@@ -37,7 +37,7 @@ const Dashboard: FC = () => {
       className="p-4 bg-gray-100 overflow-auto"
       style={{ height: "40vh" }}
     >
-      <table className="min-w-full bg-white border border-gray-200">
+      <table className="w-full bg-white border border-gray-200">
         <thead>
           <tr>
             <th className="py-2 px-4 border-b">
@@ -54,7 +54,9 @@ const Dashboard: FC = () => {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody
+          className="text-nowrap"
+        >
           {markers.map((marker, idx) => (
             <tr
               key={`marker-detail-${idx}`}

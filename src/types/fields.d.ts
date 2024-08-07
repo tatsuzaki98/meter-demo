@@ -4,3 +4,8 @@ interface Marker {
   userNumber: string;
   meterValue: string;
 }
+
+interface MapProps {
+  zoom: number;
+  center: [number, number];
+}

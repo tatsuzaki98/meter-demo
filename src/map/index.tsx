@@ -4,6 +4,25 @@ import useSWR from 'swr';
 
 const Map = () => {
   const { data: markers, mutate } = useSWR<Marker[]>('/api/markers', null, { fallbackData: [] });
+  const { data: mapProps, mutate: mutateMapProps } = useSWR<MapProps>(
+    '/api/map',
+    null,
+    {fallbackData: { center: [33.593, 130.398], zoom: 13 }}
+  );
+
+  const MapController = () => {
+    const map = useMapEvents({
+      moveend: () => {
+        if (!mapProps) return;
+        mutateMapProps({
+          ...mapProps,
+          center: [map.getCenter().lat, map.getCenter().lng],
+          zoom: map.getZoom(),
+        });
+      },
+    });
+    return null;
+  };
 
   const AddMarker = () => {
     useMapEvents({
@@ -30,8 +49,8 @@ const Map = () => {
 
   return (
     <MapContainer
-      center={[33.593, 130.398]}
-      zoom={13}
+      center={mapProps?.center}
+      zoom={mapProps?.zoom}
       scrollWheelZoom={true}
       style={{ width: "100%", height: "60vh" }}
     >
@@ -41,14 +60,15 @@ const Map = () => {
       />
 
       <AddMarker />
+      <MapController />
 
       {markers.map((marker, idx) => (
         <CircleMarker
           key={`marker-${idx}`}
           center={marker.coordinates}
           radius={5}
-          color="#cb4b16"
-          fillColor="#cb4b16"
+          color={marker.meterValue ? "#657b83" : "#cb4b16"}
+          fillColor={marker.meterValue ? "#657b83" : "#cb4b16"}
         >
           <Popup>
             <p>

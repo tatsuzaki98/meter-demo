@@ -1,4 +1,4 @@
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents, Polyline } from "react-leaflet";
+import { MapContainer, CircleMarker, Popup, TileLayer, useMapEvents, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import useSWR from 'swr';
 
@@ -43,7 +43,13 @@ const Map = () => {
       <AddMarker />
 
       {markers.map((marker, idx) => (
-        <Marker key={`marker-${idx}`} position={marker.coordinates}>
+        <CircleMarker
+          key={`marker-${idx}`}
+          center={marker.coordinates}
+          radius={5}
+          color="#cb4b16"
+          fillColor="#cb4b16"
+        >
           <Popup>
             <p>
               記入日時: {new Date(marker.updatedAt).toLocaleString()}
@@ -52,10 +58,10 @@ const Map = () => {
               番号: {idx + 1}
             </p>
           </Popup>
-        </Marker>
+        </CircleMarker>
       ))}
 
-      <Polyline positions={polylinePositions} color="blue" />
+      <Polyline positions={polylinePositions} color="#2aa198" />
     </MapContainer>
   );
 };

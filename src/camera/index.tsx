@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
 import useSWR from "swr";
+import imgUrl from "./image.png";
 
 const Camera: FC = () => {
   const {data: route, mutate: mutateRoute} = useSWR<string>('/api/route', null);
@@ -23,7 +24,7 @@ const Camera: FC = () => {
         <div className="flex justify-center items-center">
           <img
             id="meterImage"
-            src="src/camera/image.png"
+            src={imgUrl}
             alt="メーター画像"
             className="w-64 object-cover mb-4"
           />

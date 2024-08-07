@@ -1,6 +1,6 @@
 interface Marker {
   coordinates: [number, number];
-  updatedAt: string;
+  updatedAt?: string;
   userNumber: string;
   meterValue: string;
 }

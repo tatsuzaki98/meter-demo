@@ -53,6 +53,7 @@ const Camera: FC = () => {
                   return {
                     ...marker,
                     meterValue: state.meterValue,
+                    updatedAt: new Date().toISOString(),
                   };
                 }
                 return marker;

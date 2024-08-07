@@ -34,9 +34,31 @@ const Dashboard: FC = () => {
 
   return (
     <div
-      className="p-4 bg-gray-100 overflow-auto"
+      className="p-4 bg-gray-100 overflow-auto space-y-2"
       style={{ height: "40vh" }}
     >
+      <div className="flex space-x-4">
+        {/* 担当者 プルダウンメニュー */}
+        <div className="flex items-center space-x-2">
+          <label className="px-2">担当者</label>
+          <select className="rounded border border-gray-300 px-2 py-1">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </div>
+
+        {/* 記入年月 */}
+        <div className="flex items-center space-x-2">
+          <span className="pr-2">記入年月</span>
+          <span className="">西暦</span>
+          <input type="number" className="rounded border border-gray-300 px-2 py-1 text-right w-24" />
+          <span className="">年</span>
+          <input type="number" className="rounded border border-gray-300 px-2 py-1 text-right w-24" />
+          <span className="">月</span>
+        </div>
+      </div>
+
       <table className="w-full bg-white border border-gray-200">
         <thead>
           <tr>
@@ -92,7 +114,7 @@ const Dashboard: FC = () => {
                 </button>
               </td>
               <td className="py-2 px-4 border-b text-center">
-                {new Date(marker.updatedAt).toLocaleString()}
+                {marker.updatedAt && new Date(marker.updatedAt).toLocaleString()}
               </td>
             </tr>
           ))}

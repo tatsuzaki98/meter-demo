@@ -32,7 +32,6 @@ const Map = () => {
           ...markers,
           {
             coordinates: [e.latlng.lat, e.latlng.lng],
-            updatedAt: new Date().toISOString(),
             userNumber: "",
             meterValue: "",
           },
@@ -71,9 +70,6 @@ const Map = () => {
           fillColor={marker.meterValue ? "#657b83" : "#cb4b16"}
         >
           <Popup>
-            <p>
-              記入日時: {new Date(marker.updatedAt).toLocaleString()}
-            </p>
             <p>
               番号: {idx + 1}
             </p>

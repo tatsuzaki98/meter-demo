@@ -1,14 +1,16 @@
-import { MapContainer, CircleMarker, Popup, TileLayer, useMapEvents, Polyline } from "react-leaflet";
+import { MapContainer, CircleMarker, Popup, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import useSWR from 'swr';
 
 const Map = () => {
-  const { data: markers, mutate } = useSWR<Marker[]>('/api/markers', null, { fallbackData: [] });
+  const { data: markers, mutate } = useSWR<Marker[]>('@markers', null, { fallbackData: [] });
   const { data: mapProps, mutate: mutateMapProps } = useSWR<MapProps>(
-    '/api/map',
+    '@map',
     null,
     {fallbackData: { center: [33.593, 130.398], zoom: 13 }}
   );
+  const { data: editor } = useSWR<string>('@editor', null);
+  const { mutate: mutateFocusedKey } = useSWR<number | null>('@focusedKey', null);
 
   const MapController = () => {
     const map = useMapEvents({
@@ -31,9 +33,13 @@ const Map = () => {
         const newMarkers: Marker[] = [
           ...markers,
           {
+            key: markers.length,
             coordinates: [e.latlng.lat, e.latlng.lng],
+            editor: editor || "",
             userNumber: "",
             meterValue: "",
+            locationText: "",
+            updatedAt: new Date().toISOString(),
           },
         ];
         mutate(newMarkers, false);
@@ -43,8 +49,6 @@ const Map = () => {
   };
 
   if (!markers) return <p>Loading...</p>;
-
-  const polylinePositions = markers.map(marker => marker.coordinates);
 
   return (
     <MapContainer
@@ -68,16 +72,24 @@ const Map = () => {
           radius={5}
           color={marker.meterValue ? "#657b83" : "#cb4b16"}
           fillColor={marker.meterValue ? "#657b83" : "#cb4b16"}
+          eventHandlers={{
+            click: () => mutateFocusedKey(idx),
+          }}
         >
-          <Popup>
+          <Popup
+            eventHandlers={{
+              remove: () => mutateFocusedKey(null),
+            }}
+          >
             <p>
-              番号: {idx + 1}
+              #{marker.key + 1}
+            </p>
+            <p>
+              位置: {marker.locationText}
             </p>
           </Popup>
         </CircleMarker>
       ))}
-
-      <Polyline positions={polylinePositions} color="#2aa198" />
     </MapContainer>
   );
 };

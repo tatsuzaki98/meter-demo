@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 const Index = () => {
   const {data: route} = useSWR<string>(
-    '/api/route',
+    '@route',
     null,
     {fallbackData: 'map'}
   );

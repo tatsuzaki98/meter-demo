@@ -3,8 +3,8 @@ import useSWR from "swr";
 import imgUrl from "./image.png";
 
 const Camera: FC = () => {
-  const {data: route, mutate: mutateRoute} = useSWR<string>('/api/route', null);
-  const {data: markers, mutate} = useSWR<Marker[]>('/api/markers', null, {fallbackData: []});
+  const {data: route, mutate: mutateRoute} = useSWR<string>('@route', null);
+  const {data: markers, mutate} = useSWR<Marker[]>('@markers', null, {fallbackData: []});
 
   const [state, setState] = useState({meterValue: '0001'});
 

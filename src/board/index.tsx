@@ -5,47 +5,16 @@ import "leaflet/dist/leaflet.css";
 const Dashboard: FC = () => {
   const { data: markers, mutate } = useSWR<Marker[]>('@markers', null, { fallbackData: [] });
   const { data: editor, mutate: mutateEditor } = useSWR<string>('@editor', null, { fallbackData: "" });
-  const { data: focusedKey } = useSWR<number>('@focusedKey', null);
+  const { data: focusedKey, mutate: mutateFocusedKey } = useSWR<number>('@focusedKey', null);
+  const { mutate: mutateRoute } = useSWR<string>('@route', null);
 
-  const handleDelete = (idx: number) => {
+  const handleDelete = (key: number) => {
     if (!markers) return;
-    window.confirm(`${idx + 1}番のマーカーを削除します`) &&
+    window.confirm(`${key}番のマーカーを削除します`) &&
       mutate(
-        markers.filter((_, i) => i !== idx),
+        markers.filter((m) => m.key !== key),
         false
       )
-  }
-
-  const handleInputUserNumber = (idx: number, value: string) => {
-    if (!markers) return;
-    mutate(
-      markers.map((marker, i) => {
-        if (i === idx) {
-          return {
-            ...marker,
-            userNumber: value
-          }
-        }
-        return marker;
-      }),
-      false
-    )
-  }
-
-  const handleInputLocation = (idx: number, value: string) => {
-    if (!markers) return;
-    mutate(
-      markers.map((marker, i) => {
-        if (i === idx) {
-          return {
-            ...marker,
-            locationText: value
-          }
-        }
-        return marker;
-      }),
-      false
-    )
   }
 
   if (!markers) return <p>Loading...</p>;
@@ -62,46 +31,47 @@ const Dashboard: FC = () => {
       </div>
 
       <div
-        className="w-full bg-white overflow-auto"
+        className="w-full overflow-auto"
         style={{ height: "40vh" }}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col space-y-2">
           {markers.map((marker, idx) => (
             <div
-              key={`marker-detail-${idx}`}
-              className={`flex flex-col p-4 border-b-4 border-gray-100 ${focusedKey === idx ? 'bg-gray-200' : ''}`}
+              key={idx}
+              className={`flex flex-col rounded bg-white shadow p-4 ${focusedKey === marker.key ? 'border-2 border-blue-400' : ''}`}
             >
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center">
-                  <span className="font-bold mr-2">
-                    #{marker.key + 1}
-                  </span>
-                  <button
-                    className="ml-4 px-2 py-1 bg-red-700 text-white rounded shadow font-bold"
-                    onClick={() => handleDelete(idx)}
-                  >
-                    取消
-                  </button>
-                </div>
+              <div className="flex items-center pb-2">
+                <span className="font-bold mr-2">
+                  #{marker.key}
+                </span>
+                <button
+                  className="ml-4 px-2 py-1 bg-green-600 text-white rounded shadow font-bold"
+                  onClick={() => {
+                    mutateFocusedKey(marker.key);
+                    mutateRoute('each')
+                  }}
+                >
+                  編集
+                </button>
+                <button
+                  className="ml-4 py-1 text-blue-500 border-b border-blue-500"
+                  onClick={() => handleDelete(marker.key)}
+                >
+                  削除
+                </button>
               </div>
               <div className="flex flex-row space-x-2">
                 <div className="flex flex-col w-full md:w-1/5 mb-2">
                   <label className="font-bold mb-1">お客様番号</label>
-                  <input
-                    type="text"
-                    className="rounded border border-gray-300 px-2 py-1"
-                    value={marker.userNumber}
-                    onChange={(e) => handleInputUserNumber(idx, e.target.value)}
-                  />
+                  <p>
+                    {marker.userNumber}
+                  </p>
                 </div>
                 <div className="flex flex-col w-full md:w-1/5 mb-2">
                   <label className="font-bold mb-1">メーター位置</label>
-                  <input
-                    type="text"
-                    className="rounded border border-gray-300 px-2 py-1"
-                    value={marker.locationText}
-                    onChange={(e) => handleInputLocation(idx, e.target.value)}
-                  />
+                  <span>
+                    {marker.locationText}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-row space-x-2">
@@ -113,18 +83,15 @@ const Dashboard: FC = () => {
                 </div>
                 <div className="flex flex-col w-full md:w-1/5 mb-2">
                   <label className="font-bold mb-1">記入者</label>
-                  <input
-                    className="rounded border border-gray-300 px-2 py-1"
-                    type="text"
-                    value={marker.editor}
-                  />
+                  <span>
+                    {marker.editor}
+                  </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-
 
     </div>
   );

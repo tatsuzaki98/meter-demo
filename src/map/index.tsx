@@ -1,6 +1,7 @@
-import { MapContainer, CircleMarker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import useSWR from 'swr';
+import CustomMarker from "./customMarker";
 
 const Map = () => {
   const { data: markers, mutate } = useSWR<Marker[]>('@markers', null, { fallbackData: [] });
@@ -11,6 +12,7 @@ const Map = () => {
   );
   const { data: editor } = useSWR<string>('@editor', null);
   const { mutate: mutateFocusedKey } = useSWR<number | null>('@focusedKey', null);
+  const { mutate: mutateRoute } = useSWR<string>('@route', null);
 
   const MapController = () => {
     const map = useMapEvents({
@@ -30,10 +32,13 @@ const Map = () => {
     useMapEvents({
       click(e) {
         if (!markers) return;
+
+        const markerKey = markers.reduce((acc, cur) => Math.max(acc, cur.key), 0) + 1;
+
         const newMarkers: Marker[] = [
           ...markers,
           {
-            key: markers.length,
+            key: markerKey,
             coordinates: [e.latlng.lat, e.latlng.lng],
             editor: editor || "",
             userNumber: "",
@@ -42,7 +47,9 @@ const Map = () => {
             updatedAt: new Date().toISOString(),
           },
         ];
+        mutateFocusedKey(markerKey);
         mutate(newMarkers, false);
+        mutateRoute('each');
       },
     });
     return null;
@@ -66,29 +73,7 @@ const Map = () => {
       <MapController />
 
       {markers.map((marker, idx) => (
-        <CircleMarker
-          key={`marker-${idx}`}
-          center={marker.coordinates}
-          radius={5}
-          color={marker.meterValue ? "#657b83" : "#cb4b16"}
-          fillColor={marker.meterValue ? "#657b83" : "#cb4b16"}
-          eventHandlers={{
-            click: () => mutateFocusedKey(idx),
-          }}
-        >
-          <Popup
-            eventHandlers={{
-              remove: () => mutateFocusedKey(null),
-            }}
-          >
-            <p>
-              #{marker.key + 1}
-            </p>
-            <p>
-              位置: {marker.locationText}
-            </p>
-          </Popup>
-        </CircleMarker>
+        <CustomMarker key={idx} marker={marker} idx={idx}/>
       ))}
     </MapContainer>
   );

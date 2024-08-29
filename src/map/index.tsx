@@ -24,17 +24,9 @@ const Map = () => {
           zoom: map.getZoom(),
         });
       },
-    });
-    return null;
-  };
-
-  const AddMarker = () => {
-    useMapEvents({
-      click(e) {
+      click: (e) => {
         if (!markers) return;
-
         const markerKey = markers.reduce((acc, cur) => Math.max(acc, cur.key), 0) + 1;
-
         const newMarkers: Marker[] = [
           ...markers,
           {
@@ -62,18 +54,17 @@ const Map = () => {
       center={mapProps?.center}
       zoom={mapProps?.zoom}
       scrollWheelZoom={true}
-      style={{ width: "100%", height: "60vh" }}
+      style={{ width: "100%", height: "50vh" }}
     >
       <TileLayer
-        attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>,<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Mapdata: &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-        url='https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png'
+        attribution="<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+        url="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
       />
 
-      <AddMarker />
       <MapController />
 
       {markers.map((marker, idx) => (
-        <CustomMarker key={idx} marker={marker} idx={idx}/>
+        <CustomMarker key={idx} marker={marker} idx={idx} />
       ))}
     </MapContainer>
   );
